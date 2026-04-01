@@ -3,8 +3,8 @@ class Rmcal < Formula
 
   desc "Sync macOS Calendar to reMarkable tablets as interactive PDF planners"
   homepage "https://github.com/thomasqbrady/rmCalendarMacOS"
-  url "https://github.com/thomasqbrady/rmCalendarMacOS/archive/refs/tags/v0.1.7.tar.gz"
-  sha256 "7f84bc84c4195fcb47d23c6423d6d8d0d0f9f45f947b035055d6e1e81b9571d4"
+  url "https://github.com/thomasqbrady/rmCalendarMacOS/archive/refs/tags/v0.1.8.tar.gz"
+  sha256 "9964fd5095e59c34765c2cbd992dd96e45f474dc3253662a06e5d8ccf079edab"
   license "MIT"
   head "https://github.com/thomasqbrady/rmCalendarMacOS.git", branch: "main"
 
@@ -27,11 +27,10 @@ class Rmcal < Formula
 
   def caveats
     <<~EOS
-      To get started:
-        1. Register your reMarkable: rmcal register
-        2. Launch the TUI:           rmcal
+      To get started, just run:
+        rmcal
 
-      macOS will prompt for calendar access on first run.
+      You'll be guided through setup on first launch.
 
       To enable auto-sync (every 15 min):
         rmcal daemon install
