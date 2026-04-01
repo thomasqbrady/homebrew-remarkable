@@ -13,15 +13,17 @@ class Rmcal < Formula
 
   def install
     venv = virtualenv_create(libexec, "python3.12")
+    venv.pip_install "hatchling"
     venv.pip_install_and_link buildpath
   end
 
   def caveats
     <<~EOS
       To get started:
-        1. Grant calendar access:   python3 #{libexec}/grant_calendar_access.py
-        2. Register your reMarkable: rmcal register
-        3. Launch the TUI:           rmcal
+        1. Register your reMarkable: rmcal register
+        2. Launch the TUI:           rmcal
+
+      macOS will prompt for calendar access on first run.
 
       To enable auto-sync (every 15 min):
         rmcal daemon install
