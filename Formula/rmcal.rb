@@ -3,8 +3,8 @@ class Rmcal < Formula
 
   desc "Sync macOS Calendar to reMarkable tablets as interactive PDF planners"
   homepage "https://github.com/thomasqbrady/rmCalendarMacOS"
-  url "https://github.com/thomasqbrady/rmCalendarMacOS/archive/refs/tags/v0.1.20.tar.gz"
-  sha256 "282adb803f583e7c68ebbf57d69128b50dbec13e700d54178a483f1831052187"
+  url "https://github.com/thomasqbrady/rmCalendarMacOS/archive/refs/tags/v0.1.21.tar.gz"
+  sha256 "b8790f1ff0fc206dd1cb642aa3618b6f6d9e92786aa30191848ba00ff43354b4"
   license "MIT"
   head "https://github.com/thomasqbrady/rmCalendarMacOS.git", branch: "main"
 
@@ -26,19 +26,21 @@ class Rmcal < Formula
   end
 
   def post_install
-    # If the daemon is already installed, regenerate the plist so it points
-    # to the stable symlink path instead of the old versioned Cellar path.
     plist = Pathname.new("#{Dir.home}/Library/LaunchAgents/com.rmcal.daemon.plist")
     return unless plist.exist?
 
-    # Extract the --name value from the existing plist
-    content = plist.read
-    args = content.scan(%r{<string>([^<]+)</string>}).flatten
-    name_idx = args.index("--name")
-    doc_name = (name_idx && args[name_idx + 1]) || "rmCalendar"
+    # Fix stale versioned Cellar paths in-place (sed works even when full
+    # file writes are blocked by Homebrew's sandbox).
+    stable_bin = "#{HOMEBREW_PREFIX}/bin/rmcal"
+    stable_path_dir = "#{HOMEBREW_PREFIX}/bin"
+    quiet_system "sed", "-i", "",
+      "-e", "s|/opt/homebrew/Cellar/rmcal/[^/]*/libexec/bin/rmcal|#{stable_bin}|g",
+      "-e", "s|/opt/homebrew/Cellar/rmcal/[^/]*/libexec/bin|#{stable_path_dir}|g",
+      plist.to_s
 
-    system "launchctl", "unload", plist
-    system bin/"rmcal", "--name", doc_name, "daemon", "install"
+    # Reload so launchd picks up any path changes and the new code
+    quiet_system "launchctl", "unload", plist
+    quiet_system "launchctl", "load", plist
   end
 
   def caveats
